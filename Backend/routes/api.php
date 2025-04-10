@@ -4,6 +4,9 @@ use Kyojin\JWT\Facades\JWT;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CampaignController;
+use App\Http\Controllers\NewsletterController;
+use App\Http\Controllers\SubscriberController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -21,5 +24,8 @@ Route::middleware('jwt')->group(function () {
             'payload' => $payload,
         ]);
     });
+    Route::apiResource('subscribers', SubscriberController::class);
+    Route::apiResource('newsletters', NewsletterController::class);
+    Route::apiResource('campaigns', CampaignController::class);
 });
 Route::post('/login', [AuthController::class, 'login']);
