@@ -1,8 +1,25 @@
 <?php
 
+use Kyojin\JWT\Facades\JWT;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
+Route::post('/register', [AuthController::class, 'register']);
+
+Route::middleware('jwt')->group(function () {
+    Route::get('/me', function (Request $request) {
+        $token = $request->bearerToken(); //accessing the token from the header
+        $payload = JWT::decode($token); //decoding the token for the payload
+
+        return response()->json([
+            'user' => Auth::user(), //accessing the logged in user based on the token
+            'payload' => $payload,
+        ]);
+    });
+});
+Route::post('/login', [AuthController::class, 'login']);
