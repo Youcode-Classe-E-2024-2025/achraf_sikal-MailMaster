@@ -3,52 +3,32 @@
 namespace App\Http\Controllers;
 
 use App\Models\Newsletter;
+use App\Models\Subscriber;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Resources\NewsletterResource;
 
 class NewsletterController extends Controller
 {
-    public function index()
-    {
-        $newsletters = Newsletter::all();
-        return NewsletterResource::collection($newsletters);
-    }
-
-    public function store(Request $request)
+    public function send(Request $request)
     {
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
+            'subject' => 'required|string|max:255',
             'content' => 'required|string',
-            'user_id' => 'required|exists:users,id',
         ]);
 
-        $newsletter = Newsletter::create($validated);
+        $subscribers = Subscriber::where('status', 'subscribed')->pluck('email');
 
-        return response()->json(new NewsletterResource($newsletter), 201);
-    }
+        foreach ($subscribers as $email) {
+            Mail::raw($validated['content'], function ($message) use ($email, $validated) {
+                $message->to($email)
+                    ->subject($validated['subject']);
+            });
+        }
 
-    public function show(Newsletter $newsletter)
-    {
-        return new NewsletterResource($newsletter);
-    }
-
-    public function update(Request $request, Newsletter $newsletter)
-    {
-        $validated = $request->validate([
-            'title' => 'sometimes|string|max:255',
-            'content' => 'sometimes|string',
-        ]);
-
-        $newsletter->update($validated);
-
-        return response()->json(new NewsletterResource($newsletter), 200);
-    }
-
-    public function destroy(Newsletter $newsletter)
-    {
-        $newsletter->delete();
-
-        return response()->json(null, 204);
+        return response()->json([
+            'message' => 'Newsletter sent to all active subscribers.'
+        ], 200);
     }
 }

@@ -25,7 +25,7 @@ Route::middleware('jwt')->group(function () {
         ]);
     });
     Route::apiResource('subscribers', SubscriberController::class);
-    Route::apiResource('newsletters', NewsletterController::class);
+    Route::post('newsletters', [NewsletterController::class,'send']);
     Route::apiResource('campaigns', CampaignController::class);
 });
 Route::post('/login', [AuthController::class, 'login']);
