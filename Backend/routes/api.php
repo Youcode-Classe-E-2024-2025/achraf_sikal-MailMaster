@@ -22,3 +22,4 @@ Route::middleware('jwt')->group(function () {
         ]);
     });
 });
+Route::post('/login', [AuthController::class, 'login']);
