@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Newsletter;
 use App\Models\Subscriber;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
-use App\Http\Resources\NewsletterResource;
 
 class NewsletterController extends Controller
 {
