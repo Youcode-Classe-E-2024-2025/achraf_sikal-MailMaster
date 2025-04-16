@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Newsletter;
 use App\Models\Subscriber;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -12,17 +13,22 @@ class NewsletterController extends Controller
 {
     public function send()
     {
-        $subscribers = User::all("email");
+        $newsletter = Newsletter::latest()->first();
+
+        if (!$newsletter) {
+            return response()->json([
+                'message' => 'No newsletter found.'
+            ], 404);
+        }
+
+        $subscribers = User::all(['email']);
 
         foreach ($subscribers as $subscriber) {
-            Mail::raw("cccccccccccccccc", function ($message) use ($subscriber) {
-                $message->to($subscriber->email)
-                    ->subject("sssssssssssssssss");
-            });
+            Mail::to($subscriber->email)->send(new Newslettere($newsletter->title, $newsletter->content));
         }
 
         return response()->json([
-            'message' => 'Newsletter sent to all active subscribers.'
+            'message' => 'Newsletter sent to all subscribers.'
         ], 200);
     }
 }
