@@ -10,19 +10,14 @@ use Illuminate\Support\Facades\Mail;
 
 class NewsletterController extends Controller
 {
-    public function send(Request $request)
+    public function send()
     {
-        $validated = $request->validate([
-            'subject' => 'required|string|max:255',
-            'content' => 'required|string',
-        ]);
+        $subscribers = User::all("email");
 
-        $subscribers = User::all()->pluck('email');
-
-        foreach ($subscribers as $email) {
-            Mail::raw($validated['content'], function ($message) use ($email, $validated) {
-                $message->to($email)
-                    ->subject($validated['subject']);
+        foreach ($subscribers as $subscriber) {
+            Mail::raw("cccccccccccccccc", function ($message) use ($subscriber) {
+                $message->to($subscriber->email)
+                    ->subject("sssssssssssssssss");
             });
         }
 
